@@ -2,6 +2,7 @@ import Navigation from "@/components/navigation";
 import HeroSection from "@/components/hero-section";
 import ProductSection from "@/components/product-section";
 import HistorySection from "@/components/history-section";
+import StoreLocator from "@/components/store-locator";
 import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
 
@@ -12,6 +13,7 @@ export default function Home() {
       <HeroSection />
       <ProductSection />
       <HistorySection />
+      <StoreLocator />
       <ContactSection />
       <Footer />
     </div>

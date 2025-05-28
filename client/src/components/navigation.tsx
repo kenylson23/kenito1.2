@@ -48,6 +48,7 @@ export default function Navigation() {
               { label: "Início", id: "home" },
               { label: "Produto", id: "produto" },
               { label: "História", id: "historia" },
+              { label: "Pontos de Venda", id: "pontos-venda" },
               { label: "Contacto", id: "contato" }
             ].map((item) => (
               <motion.button
@@ -84,6 +85,7 @@ export default function Navigation() {
                 { label: "Início", id: "home" },
                 { label: "Produto", id: "produto" },
                 { label: "História", id: "historia" },
+                { label: "Pontos de Venda", id: "pontos-venda" },
                 { label: "Contacto", id: "contato" }
               ].map((item) => (
                 <button
