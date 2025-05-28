@@ -1,39 +1,74 @@
-import { users, type User, type InsertUser } from "@shared/schema";
-
-// modify the interface with any CRUD methods
-// you might need
+import { users, stores, type User, type InsertUser, type Store, type InsertStore } from "@shared/schema";
+import { db } from "./db";
+import { eq, ilike, or } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Store methods
+  getAllStores(): Promise<Store[]>;
+  getStoresByProvince(province: string): Promise<Store[]>;
+  getStoresByCity(city: string): Promise<Store[]>;
+  searchStores(query: string): Promise<Store[]>;
+  createStore(store: InsertStore): Promise<Store>;
+  getStore(id: number): Promise<Store | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  currentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.currentId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
+  }
+
+  async getAllStores(): Promise<Store[]> {
+    return await db.select().from(stores);
+  }
+
+  async getStoresByProvince(province: string): Promise<Store[]> {
+    return await db.select().from(stores).where(eq(stores.province, province));
+  }
+
+  async getStoresByCity(city: string): Promise<Store[]> {
+    return await db.select().from(stores).where(eq(stores.city, city));
+  }
+
+  async searchStores(query: string): Promise<Store[]> {
+    return await db.select().from(stores).where(
+      or(
+        ilike(stores.name, `%${query}%`),
+        ilike(stores.address, `%${query}%`),
+        ilike(stores.city, `%${query}%`)
+      )
+    );
+  }
+
+  async createStore(insertStore: InsertStore): Promise<Store> {
+    const [store] = await db
+      .insert(stores)
+      .values(insertStore)
+      .returning();
+    return store;
+  }
+
+  async getStore(id: number): Promise<Store | undefined> {
+    const [store] = await db.select().from(stores).where(eq(stores.id, id));
+    return store || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
