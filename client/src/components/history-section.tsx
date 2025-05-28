@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import kenitoBreweryImage from "@assets/ChatGPT Image 28_05_2025, 22_17_11.png";
 
 export default function HistorySection() {
   const { ref: sectionRef, isVisible } = useScrollReveal();
@@ -70,8 +71,8 @@ export default function HistorySection() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <motion.img
-              src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600"
-              alt="Cultura angolana"
+              src={kenitoBreweryImage}
+              alt="Fábrica Kenito Brewery"
               className="rounded-xl shadow-2xl w-full h-auto"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
