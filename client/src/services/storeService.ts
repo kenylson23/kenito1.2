@@ -1,132 +1,175 @@
-import { supabase } from '@/lib/supabaseClient'
 import type { Store, InsertStore } from '@shared/schema'
+
+// Dados estáticos das lojas
+const staticStores: Store[] = [
+  {
+    id: 1,
+    name: 'Kenito Store Luanda Centro',
+    address: 'Rua da Missão, 123',
+    city: 'Luanda',
+    province: 'Luanda',
+    phone: '+244 923 456 789',
+    email: 'luanda@kenito.ao',
+    latitude: '-8.8383',
+    longitude: '13.2344',
+    type: 'retail',
+    openHours: 'Segunda a Sexta: 8h às 18h, Sábado: 8h às 15h',
+    createdAt: new Date('2024-01-15T10:00:00Z')
+  },
+  {
+    id: 2,
+    name: 'Kenito Bar Marginal',
+    address: 'Ilha de Luanda, Marginal',
+    city: 'Luanda',
+    province: 'Luanda',
+    phone: '+244 923 456 790',
+    email: 'bar@kenito.ao',
+    latitude: '-8.7832',
+    longitude: '13.2344',
+    type: 'bar',
+    openHours: 'Todos os dias: 18h às 2h',
+    createdAt: new Date('2024-01-10T10:00:00Z')
+  },
+  {
+    id: 3,
+    name: 'Kenito Atacado Benguela',
+    address: 'Avenida Norton de Matos, 456',
+    city: 'Benguela',
+    province: 'Benguela',
+    phone: '+244 923 456 791',
+    email: 'benguela@kenito.ao',
+    latitude: '-12.5764',
+    longitude: '13.4055',
+    type: 'wholesale',
+    openHours: 'Segunda a Sexta: 7h às 17h',
+    createdAt: new Date('2024-01-05T10:00:00Z')
+  },
+  {
+    id: 4,
+    name: 'Kenito Restaurant Huambo',
+    address: 'Rua José Martí, 789',
+    city: 'Huambo',
+    province: 'Huambo',
+    phone: '+244 923 456 792',
+    email: 'huambo@kenito.ao',
+    latitude: '-12.7756',
+    longitude: '15.7397',
+    type: 'restaurant',
+    openHours: 'Todos os dias: 12h às 22h',
+    createdAt: new Date('2024-01-01T10:00:00Z')
+  },
+  {
+    id: 5,
+    name: 'Kenito Store Lobito',
+    address: 'Avenida da Independência, 321',
+    city: 'Lobito',
+    province: 'Benguela',
+    phone: '+244 923 456 793',
+    email: 'lobito@kenito.ao',
+    latitude: '-12.3598',
+    longitude: '13.5464',
+    type: 'retail',
+    openHours: 'Segunda a Sábado: 8h às 18h',
+    createdAt: new Date('2023-12-20T10:00:00Z')
+  }
+];
 
 export class StoreService {
   // Listar todas as lojas
   static async getAllStores(): Promise<Store[]> {
-    const { data, error } = await supabase
-      .from('stores')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching stores:', error)
-      throw new Error(`Failed to fetch stores: ${error.message}`)
-    }
-
-    return data || []
+    // Simular delay de API
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return [...staticStores].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
   }
 
   // Buscar lojas por província
   static async getStoresByProvince(province: string): Promise<Store[]> {
-    const { data, error } = await supabase
-      .from('stores')
-      .select('*')
-      .eq('province', province)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching stores by province:', error)
-      throw new Error(`Failed to fetch stores by province: ${error.message}`)
-    }
-
-    return data || []
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return staticStores
+      .filter(store => store.province.toLowerCase() === province.toLowerCase())
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
   }
 
   // Buscar lojas por cidade
   static async getStoresByCity(city: string): Promise<Store[]> {
-    const { data, error } = await supabase
-      .from('stores')
-      .select('*')
-      .eq('city', city)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching stores by city:', error)
-      throw new Error(`Failed to fetch stores by city: ${error.message}`)
-    }
-
-    return data || []
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return staticStores
+      .filter(store => store.city.toLowerCase() === city.toLowerCase())
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
   }
 
   // Pesquisar lojas
   static async searchStores(query: string): Promise<Store[]> {
-    const { data, error } = await supabase
-      .from('stores')
-      .select('*')
-      .or(`name.ilike.%${query}%,address.ilike.%${query}%,city.ilike.%${query}%`)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error searching stores:', error)
-      throw new Error(`Failed to search stores: ${error.message}`)
-    }
-
-    return data || []
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const searchTerm = query.toLowerCase();
+    return staticStores
+      .filter(store => 
+        store.name.toLowerCase().includes(searchTerm) ||
+        store.address.toLowerCase().includes(searchTerm) ||
+        store.city.toLowerCase().includes(searchTerm) ||
+        store.province.toLowerCase().includes(searchTerm)
+      )
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
   }
 
-  // Criar nova loja
+  // Criar nova loja (simulado)
   static async createStore(store: InsertStore): Promise<Store> {
-    const { data, error } = await supabase
-      .from('stores')
-      .insert(store)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating store:', error)
-      throw new Error(`Failed to create store: ${error.message}`)
-    }
-
-    return data
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const newStore: Store = {
+      id: staticStores.length + 1,
+      ...store,
+      createdAt: new Date()
+    };
+    
+    staticStores.push(newStore);
+    return newStore;
   }
 
   // Buscar loja por ID
   static async getStore(id: number): Promise<Store | null> {
-    const { data, error } = await supabase
-      .from('stores')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null // Loja não encontrada
-      }
-      console.error('Error fetching store:', error)
-      throw new Error(`Failed to fetch store: ${error.message}`)
-    }
-
-    return data
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return staticStores.find(store => store.id === id) || null;
   }
 
-  // Atualizar loja
+  // Atualizar loja (simulado)
   static async updateStore(id: number, updates: Partial<InsertStore>): Promise<Store> {
-    const { data, error } = await supabase
-      .from('stores')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error updating store:', error)
-      throw new Error(`Failed to update store: ${error.message}`)
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const storeIndex = staticStores.findIndex(store => store.id === id);
+    if (storeIndex === -1) {
+      throw new Error('Store not found');
     }
-
-    return data
+    
+    staticStores[storeIndex] = { ...staticStores[storeIndex], ...updates };
+    return staticStores[storeIndex];
   }
 
-  // Deletar loja
+  // Deletar loja (simulado)
   static async deleteStore(id: number): Promise<void> {
-    const { error } = await supabase
-      .from('stores')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error deleting store:', error)
-      throw new Error(`Failed to delete store: ${error.message}`)
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const storeIndex = staticStores.findIndex(store => store.id === id);
+    if (storeIndex === -1) {
+      throw new Error('Store not found');
     }
+    
+    staticStores.splice(storeIndex, 1);
   }
 }

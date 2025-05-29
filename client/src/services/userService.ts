@@ -1,109 +1,87 @@
-import { supabase } from '@/lib/supabaseClient'
 import type { User, InsertUser } from '@shared/schema'
+
+// Dados estáticos dos usuários
+const staticUsers: User[] = [
+  {
+    id: 1,
+    username: 'admin',
+    password: 'admin123'
+  },
+  {
+    id: 2,
+    username: 'kenito_user',
+    password: 'kenito2024'
+  }
+];
 
 export class UserService {
   // Listar todos os usuários
   static async getAllUsers(): Promise<User[]> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .order('id', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching users:', error)
-      throw new Error(`Failed to fetch users: ${error.message}`)
-    }
-
-    return data || []
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return [...staticUsers];
   }
 
   // Buscar usuário por ID
   static async getUser(id: number): Promise<User | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null // Usuário não encontrado
-      }
-      console.error('Error fetching user:', error)
-      throw new Error(`Failed to fetch user: ${error.message}`)
-    }
-
-    return data
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return staticUsers.find(user => user.id === id) || null;
   }
 
   // Buscar usuário por username
   static async getUserByUsername(username: string): Promise<User | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('username', username)
-      .single()
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null // Usuário não encontrado
-      }
-      console.error('Error fetching user by username:', error)
-      throw new Error(`Failed to fetch user by username: ${error.message}`)
-    }
-
-    return data
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return staticUsers.find(user => user.username === username) || null;
   }
 
-  // Criar novo usuário
+  // Criar novo usuário (simulado)
   static async createUser(user: InsertUser): Promise<User> {
-    const { data, error } = await supabase
-      .from('users')
-      .insert(user)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating user:', error)
-      if (error.code === '23505') {
-        throw new Error('Username already exists')
-      }
-      throw new Error(`Failed to create user: ${error.message}`)
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    // Verificar se username já existe
+    const existingUser = staticUsers.find(u => u.username === user.username);
+    if (existingUser) {
+      throw new Error('Username already exists');
     }
-
-    return data
+    
+    const newUser: User = {
+      id: staticUsers.length + 1,
+      ...user
+    };
+    
+    staticUsers.push(newUser);
+    return newUser;
   }
 
-  // Atualizar usuário
+  // Atualizar usuário (simulado)
   static async updateUser(id: number, updates: Partial<InsertUser>): Promise<User> {
-    const { data, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error updating user:', error)
-      if (error.code === '23505') {
-        throw new Error('Username already exists')
-      }
-      throw new Error(`Failed to update user: ${error.message}`)
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    const userIndex = staticUsers.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+      throw new Error('User not found');
     }
-
-    return data
+    
+    // Verificar se o novo username já existe (se estiver sendo atualizado)
+    if (updates.username) {
+      const existingUser = staticUsers.find(u => u.username === updates.username && u.id !== id);
+      if (existingUser) {
+        throw new Error('Username already exists');
+      }
+    }
+    
+    staticUsers[userIndex] = { ...staticUsers[userIndex], ...updates };
+    return staticUsers[userIndex];
   }
 
-  // Deletar usuário
+  // Deletar usuário (simulado)
   static async deleteUser(id: number): Promise<void> {
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error deleting user:', error)
-      throw new Error(`Failed to delete user: ${error.message}`)
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const userIndex = staticUsers.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+      throw new Error('User not found');
     }
+    
+    staticUsers.splice(userIndex, 1);
   }
 }
