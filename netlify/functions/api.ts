@@ -1,9 +1,8 @@
 import { Handler } from '@netlify/functions';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, ilike, or } from 'drizzle-orm';
 import { z } from 'zod';
-import ws from 'ws';
 
 // Database schema
 import { pgTable, text, serial, decimal, timestamp } from 'drizzle-orm/pg-core';
@@ -34,8 +33,6 @@ type Store = typeof stores.$inferSelect;
 type InsertStore = z.infer<typeof insertStoreSchema>;
 
 // Database setup
-neonConfig.webSocketConstructor = ws;
-
 let db: any = null;
 
 function getDb() {
@@ -43,8 +40,11 @@ function getDb() {
     if (!process.env.DATABASE_URL) {
       throw new Error('DATABASE_URL must be set');
     }
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    db = drizzle({ client: pool, schema: { stores } });
+    const pool = new Pool({ 
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    db = drizzle(pool, { schema: { stores } });
   }
   return db;
 }
