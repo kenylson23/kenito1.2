@@ -4,6 +4,7 @@ import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Search, Phone, Clock, Filter } from "lucide-react";
 import { Store } from "@shared/schema";
+import { StoreService } from "@/services/storeService";
 
 export default function StoreLocator() {
   const { ref: sectionRef, isVisible } = useScrollReveal();
