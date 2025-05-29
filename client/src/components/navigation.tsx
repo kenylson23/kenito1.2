@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,6 +62,15 @@ export default function Navigation() {
                 {item.label}
               </motion.button>
             ))}
+            <Link href="/admin">
+              <motion.span
+                className="hover:text-green-400 transition-colors text-white cursor-pointer"
+                whileHover={{ y: -2 }}
+                whileTap={{ y: 0 }}
+              >
+                Admin
+              </motion.span>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,6 +106,11 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
+              <Link href="/admin">
+                <span className="text-left hover:text-green-400 transition-colors text-white cursor-pointer">
+                  Admin
+                </span>
+              </Link>
             </div>
           </motion.div>
         )}

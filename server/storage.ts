@@ -72,4 +72,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Use TempStorage quando o banco local não estiver disponível
+export const storage = db ? new DatabaseStorage() : new TempStorage();
