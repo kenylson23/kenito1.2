@@ -90,8 +90,11 @@ export class StoreService {
       .single()
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return null // Loja não encontrada
+      }
       console.error('Error fetching store:', error)
-      return null
+      throw new Error(`Failed to fetch store: ${error.message}`)
     }
 
     return data

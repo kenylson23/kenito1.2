@@ -26,8 +26,11 @@ export class UserService {
       .single()
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return null // Usuário não encontrado
+      }
       console.error('Error fetching user:', error)
-      return null
+      throw new Error(`Failed to fetch user: ${error.message}`)
     }
 
     return data
@@ -42,8 +45,11 @@ export class UserService {
       .single()
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return null // Usuário não encontrado
+      }
       console.error('Error fetching user by username:', error)
-      return null
+      throw new Error(`Failed to fetch user by username: ${error.message}`)
     }
 
     return data
@@ -59,6 +65,9 @@ export class UserService {
 
     if (error) {
       console.error('Error creating user:', error)
+      if (error.code === '23505') {
+        throw new Error('Username already exists')
+      }
       throw new Error(`Failed to create user: ${error.message}`)
     }
 
@@ -76,6 +85,9 @@ export class UserService {
 
     if (error) {
       console.error('Error updating user:', error)
+      if (error.code === '23505') {
+        throw new Error('Username already exists')
+      }
       throw new Error(`Failed to update user: ${error.message}`)
     }
 
