@@ -20,16 +20,17 @@ export default function StoreLocator() {
   ];
 
   const { data: stores = [], isLoading } = useQuery({
-    queryKey: ['/api/stores', selectedProvince, selectedCity, searchQuery],
+    queryKey: ['supabase-stores', selectedProvince, selectedCity, searchQuery],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append('search', searchQuery);
-      if (selectedProvince) params.append('province', selectedProvince);
-      if (selectedCity) params.append('city', selectedCity);
-      
-      const response = await fetch(`/api/stores?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch stores');
-      return response.json();
+      if (searchQuery) {
+        return await StoreService.searchStores(searchQuery);
+      } else if (selectedProvince) {
+        return await StoreService.getStoresByProvince(selectedProvince);
+      } else if (selectedCity) {
+        return await StoreService.getStoresByCity(selectedCity);
+      } else {
+        return await StoreService.getAllStores();
+      }
     }
   });
 
