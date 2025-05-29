@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
-import { useQuery } from "@tanstack/react-query";
 import { MapPin, Search, Phone, Clock, Filter } from "lucide-react";
-import { Store } from "@shared/schema";
-import { StoreService } from "@/services/storeService";
+
+interface Store {
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  province: string;
+  phone?: string;
+  email?: string;
+  type: string;
+  openHours?: string;
+}
 
 export default function StoreLocator() {
   const { ref: sectionRef, isVisible } = useScrollReveal();
@@ -19,23 +28,82 @@ export default function StoreLocator() {
     "Lunda Sul", "Malanje", "Moxico", "Namibe", "Uíge", "Zaire"
   ];
 
-  const { data: stores = [], isLoading } = useQuery({
-    queryKey: ['supabase-stores', selectedProvince, selectedCity, searchQuery],
-    queryFn: async () => {
-      if (searchQuery) {
-        return await StoreService.searchStores(searchQuery);
-      } else if (selectedProvince) {
-        return await StoreService.getStoresByProvince(selectedProvince);
-      } else if (selectedCity) {
-        return await StoreService.getStoresByCity(selectedCity);
-      } else {
-        return await StoreService.getAllStores();
-      }
+  // Dados estáticos das lojas
+  const staticStores: Store[] = [
+    {
+      id: 1,
+      name: 'Kenito Store Luanda Centro',
+      address: 'Rua da Missão, 123',
+      city: 'Luanda',
+      province: 'Luanda',
+      phone: '+244 923 456 789',
+      email: 'luanda@kenito.ao',
+      type: 'retail',
+      openHours: 'Segunda a Sexta: 8h às 18h, Sábado: 8h às 15h'
+    },
+    {
+      id: 2,
+      name: 'Kenito Bar Marginal',
+      address: 'Ilha de Luanda, Marginal',
+      city: 'Luanda',
+      province: 'Luanda',
+      phone: '+244 923 456 790',
+      email: 'bar@kenito.ao',
+      type: 'bar',
+      openHours: 'Todos os dias: 18h às 2h'
+    },
+    {
+      id: 3,
+      name: 'Kenito Atacado Benguela',
+      address: 'Avenida Norton de Matos, 456',
+      city: 'Benguela',
+      province: 'Benguela',
+      phone: '+244 923 456 791',
+      email: 'benguela@kenito.ao',
+      type: 'wholesale',
+      openHours: 'Segunda a Sexta: 7h às 17h'
+    },
+    {
+      id: 4,
+      name: 'Kenito Restaurant Huambo',
+      address: 'Rua José Martí, 789',
+      city: 'Huambo',
+      province: 'Huambo',
+      phone: '+244 923 456 792',
+      email: 'huambo@kenito.ao',
+      type: 'restaurant',
+      openHours: 'Todos os dias: 12h às 22h'
+    },
+    {
+      id: 5,
+      name: 'Kenito Store Lobito',
+      address: 'Avenida da Independência, 321',
+      city: 'Lobito',
+      province: 'Benguela',
+      phone: '+244 923 456 793',
+      email: 'lobito@kenito.ao',
+      type: 'retail',
+      openHours: 'Segunda a Sábado: 8h às 18h'
     }
+  ];
+
+  // Filtrar lojas baseado nos filtros aplicados
+  const stores = staticStores.filter(store => {
+    const matchesSearch = !searchQuery || 
+      store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      store.city.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesProvince = !selectedProvince || store.province === selectedProvince;
+    const matchesCity = !selectedCity || store.city === selectedCity;
+    
+    return matchesSearch && matchesProvince && matchesCity;
   });
 
+  const isLoading = false;
+
   const handleSearch = () => {
-    // Search is handled automatically by the query dependencies
+    // Search is handled automatically by the filter logic
   };
 
   const clearFilters = () => {
