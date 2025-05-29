@@ -1,6 +1,7 @@
 import { users, stores, type User, type InsertUser, type Store, type InsertStore } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or } from "drizzle-orm";
+import { TempStorage } from "./temp-storage";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
