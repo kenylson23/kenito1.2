@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = "npm install && npx vite build --config vite.config.prod.ts"
+  command = "npm install && npx vite build --config vite.config.prod.ts && cd netlify/functions && npm install"
 
 [build.environment]
   NODE_VERSION = "20"

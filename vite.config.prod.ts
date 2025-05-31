@@ -12,14 +12,10 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist",
+    outDir: "../dist",
     sourcemap: false,
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "client/index.html"),
-      },
-    },
+    emptyOutDir: true,
   },
   root: "client",
-  publicDir: path.resolve(__dirname, "attached_assets"),
+  publicDir: "../attached_assets",
 });
